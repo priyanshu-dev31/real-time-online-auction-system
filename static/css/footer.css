@@ -1,0 +1,33 @@
+/* ===================================
+   FOOTER
+=================================== */
+
+.main-footer{
+    margin-top:60px;
+    background:#1f2937;
+    color:white;
+    text-align:center;
+    padding:35px 20px;
+}
+
+.main-footer h3{
+    font-size:24px;
+    margin-bottom:12px;
+    font-weight:600;
+}
+
+.main-footer h3 i{
+    color:#f59e0b;
+    margin-right:8px;
+}
+
+.main-footer p{
+    color:#d1d5db;
+    margin-bottom:15px;
+    font-size:15px;
+}
+
+.main-footer small{
+    color:#9ca3af;
+    font-size:14px;
+}

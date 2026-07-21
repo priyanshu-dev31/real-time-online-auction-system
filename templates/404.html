@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}
+Page Not Found
+{% endblock %}
+
+{% block content %}
+
+<div class="error-page">
+
+    <p class="error-code">
+        404
+    </p>
+
+    <h1>
+        Page Not Found
+    </h1>
+
+    <p class="error-message">
+        The page you are looking for does not exist or may have been moved.
+    </p>
+
+    <div class="error-actions">
+
+        <a href="{{ url_for('home') }}" class="btn">
+            <i class="fa-solid fa-house"></i>
+            Return Home
+        </a>
+
+        <a href="{{ url_for('auctions') }}" class="btn error-secondary-btn">
+            Browse Auctions
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

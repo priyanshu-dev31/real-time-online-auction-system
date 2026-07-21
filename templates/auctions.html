@@ -1,0 +1,360 @@
+{% extends "base.html" %}
+
+{% block title %}
+Available Auctions
+{% endblock %}
+
+{% block content %}
+
+<div class="auctions-page">
+
+    <!-- Page heading -->
+
+    <header class="auctions-page-header">
+
+        <p class="auctions-page-label">
+            Auction Marketplace
+        </p>
+
+        <h1>
+            Available Auctions
+        </h1>
+
+        <p>
+            Browse active and completed auctions, compare prices and place bids.
+        </p>
+
+    </header>
+
+
+    <!-- Search, filters and sorting -->
+
+    <section class="auction-controls">
+
+        <form
+            method="GET"
+            action="{{ url_for('auctions') }}"
+            class="search-form">
+
+            <input
+                type="hidden"
+                name="status"
+                value="{{ status or '' }}">
+
+            <input
+                type="hidden"
+                name="sort"
+                value="{{ sort or 'latest' }}">
+
+            <input
+                type="text"
+                name="search"
+                value="{{ search or '' }}"
+                placeholder="Search auctions by title"
+                aria-label="Search auctions">
+
+            <button
+                type="submit"
+                class="btn">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+                Search
+
+            </button>
+
+        </form>
+
+
+        <div class="filter-buttons">
+
+            <a
+                href="{{ url_for(
+                    'auctions',
+                    search=search,
+                    sort=sort
+                ) }}"
+                class="btn filter-btn
+                {% if not status %}
+                    filter-btn-active
+                {% endif %}">
+
+                All
+
+            </a>
+
+            <a
+                href="{{ url_for(
+                    'auctions',
+                    status='active',
+                    search=search,
+                    sort=sort
+                ) }}"
+                class="btn filter-btn
+                {% if status == 'active' %}
+                    filter-btn-active
+                {% endif %}">
+
+                Active
+
+            </a>
+
+            <a
+                href="{{ url_for(
+                    'auctions',
+                    status='closed',
+                    search=search,
+                    sort=sort
+                ) }}"
+                class="btn filter-btn
+                {% if status == 'closed' %}
+                    filter-btn-active
+                {% endif %}">
+
+                Closed
+
+            </a>
+
+        </div>
+
+
+        <form
+            method="GET"
+            action="{{ url_for('auctions') }}"
+            class="sort-form">
+
+            <input
+                type="hidden"
+                name="search"
+                value="{{ search or '' }}">
+
+            <input
+                type="hidden"
+                name="status"
+                value="{{ status or '' }}">
+
+            <label for="auction-sort">
+                Sort by
+            </label>
+
+            <select
+                id="auction-sort"
+                name="sort"
+                onchange="this.form.submit()">
+
+                <option
+                    value="latest"
+                    {% if sort == "latest" %}selected{% endif %}>
+                    Latest
+                </option>
+
+                <option
+                    value="low"
+                    {% if sort == "low" %}selected{% endif %}>
+                    Price: Low to High
+                </option>
+
+                <option
+                    value="high"
+                    {% if sort == "high" %}selected{% endif %}>
+                    Price: High to Low
+                </option>
+
+                <option
+                    value="ending"
+                    {% if sort == "ending" %}selected{% endif %}>
+                    Ending Soon
+                </option>
+
+            </select>
+
+        </form>
+
+    </section>
+
+
+    <!-- Auction cards -->
+
+    {% if auctions %}
+
+        <div class="auction-grid">
+
+            {% for auction in auctions %}
+
+                <article class="auction-card">
+
+                    <div class="auction-image-wrapper">
+
+                        {% if auction.image %}
+
+                            <img
+                                src="{{ url_for(
+                                    'static',
+                                    filename='uploads/' + auction.image
+                                ) }}"
+                                alt="{{ auction.title }}"
+                                class="auction-image">
+
+                        {% elif auction.image_url %}
+
+                            <img
+                                src="{{ auction.image_url }}"
+                                alt="{{ auction.title }}"
+                                class="auction-image">
+
+                        {% else %}
+
+                            <img
+                                src="{{ url_for(
+                                    'static',
+                                    filename='images/no-image.png'
+                                ) }}"
+                                alt="No image available"
+                                class="auction-image">
+
+                        {% endif %}
+
+
+                        {% if auction.status == "Active" %}
+
+                            <span class="auction-status status-active">
+                                Active
+                            </span>
+
+                        {% else %}
+
+                            <span class="auction-status status-closed">
+                                Closed
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="auction-card-body">
+
+                        <h2 class="auction-card-title">
+                            {{ auction.title }}
+                        </h2>
+
+
+                        <div class="auction-price-grid">
+
+                            <div class="auction-price-item">
+
+                                <p class="auction-price-label">
+                                    Starting Price
+                                </p>
+
+                                <p class="auction-starting-price">
+                                    ₹ {{ auction.starting_price }}
+                                </p>
+
+                            </div>
+
+
+                            <div class="auction-price-item">
+
+                                <p class="auction-price-label">
+                                    Current Price
+                                </p>
+
+                                <p class="auction-current-price">
+                                    ₹ {{ auction.current_price }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="card-buttons">
+
+                            <a
+                                href="{{ url_for(
+                                    'auction_details',
+                                    auction_id=auction.id
+                                ) }}"
+                                class="btn">
+
+                                View Auction
+
+                            </a>
+
+
+                            {% if session.get("role") == "admin" %}
+
+                                <a
+                                    href="{{ url_for(
+                                        'edit_auction',
+                                        auction_id=auction.id
+                                    ) }}"
+                                    class="btn edit-btn">
+
+                                    <i class="fa-solid fa-pen"></i>
+                                    Edit
+
+                                </a>
+
+                                <form
+                                    action="{{ url_for(
+                                        'delete_auction',
+                                        auction_id=auction.id
+                                    ) }}"
+                                    method="POST">
+
+                                    <button
+                                        type="submit"
+                                        class="btn delete-btn"
+                                        onclick="return confirm(
+                                            'Are you sure you want to delete this auction?'
+                                        )">
+
+                                        <i class="fa-solid fa-trash"></i>
+                                        Delete
+
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state auctions-empty-state">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <h2>
+                No Auctions Found
+            </h2>
+
+            <p>
+                Try changing your search keyword, filter or sorting option.
+            </p>
+
+            <a
+                href="{{ url_for('auctions') }}"
+                class="btn">
+
+                View All Auctions
+
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

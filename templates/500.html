@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}
+Server Error
+{% endblock %}
+
+{% block content %}
+
+<div class="error-page">
+
+    <p class="error-code">
+        500
+    </p>
+
+    <h1>
+        Something Went Wrong
+    </h1>
+
+    <p class="error-message">
+        The server encountered an unexpected problem. Please try again later.
+    </p>
+
+    <div class="error-actions">
+
+        <a href="{{ url_for('home') }}" class="btn">
+
+            <i class="fa-solid fa-house"></i>
+            Return Home
+
+        </a>
+
+        <a
+            href="{{ url_for('auctions') }}"
+            class="btn error-secondary-btn">
+
+            Browse Auctions
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

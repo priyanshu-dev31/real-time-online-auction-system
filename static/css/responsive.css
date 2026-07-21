@@ -1,0 +1,197 @@
+/* ===================================
+   RESPONSIVE DESIGN
+=================================== */
+
+@media(max-width:768px){
+
+
+    .auction-time-grid{
+    grid-template-columns:1fr;
+    gap:0;
+   }
+
+   .image-preview-box{
+      min-height:230px;
+   }
+
+    .image-preview-box img{
+      width:210px;
+      height:210px;
+    }
+
+    .navbar{
+        flex-direction:column;
+        gap:15px;
+        padding:15px 20px;
+    }
+
+    .nav-links{
+        flex-direction:column;
+        align-items:center;
+        width:100%;
+        gap:12px;
+    }
+
+    .container{
+        width:94%;
+        margin:25px auto;
+    }
+
+    .hero{
+        padding:55px 20px;
+    }
+
+    .hero h1{
+        font-size:36px;
+    }
+
+    .hero p{
+        font-size:16px;
+    }
+
+    .hero-actions{
+        flex-direction:column;
+        align-items:center;
+    }
+
+    .hero-actions .btn{
+        width:100%;
+        max-width:300px;
+    }
+
+    .section-heading h2,
+    .why-us h2{
+        font-size:28px;
+    }
+
+    .stats-grid,
+    .dashboard-grid,
+    .auction-grid,
+    .why-grid{
+        grid-template-columns:1fr;
+    }
+
+    .auction-image-wrapper{
+        height:220px;
+    }
+
+    .search-form{
+        flex-direction:column;
+    }
+
+    .search-form .btn{
+        width:100%;
+    }
+
+    .sort-form{
+        flex-direction:column;
+    }
+
+    .sort-form select{
+        width:100%;
+    }
+
+    .filter-buttons{
+        gap:10px;
+    }
+
+    .filter-buttons .btn{
+        padding:10px 18px;
+    }
+
+    .product-image{
+        width:100%;
+        height:auto;
+    }
+
+    .activity-table{
+        display:block;
+        overflow-x:auto;
+        white-space:nowrap;
+    }
+
+    .auth-card{
+        padding:25px 20px;
+    }
+
+    .main-footer{
+        padding:30px 15px;
+    }
+
+    .admin-page-header{
+    flex-direction:column;
+}
+
+.admin-page-header h1{
+    font-size:30px;
+}
+
+.admin-actions{
+    width:100%;
+    justify-content:flex-start;
+}
+
+.admin-actions .btn{
+    flex:1;
+    min-width:160px;
+}
+
+.admin-section{
+    padding:20px;
+}
+
+.dashboard-card{
+    min-height:110px;
+}
+
+.admin-section-heading h2{
+    font-size:22px;
+}
+
+.auctions-page-header h1{
+    font-size:30px;
+}
+
+.auction-controls{
+    padding:20px;
+}
+
+.auction-card-body .card-buttons{
+    align-items:stretch;
+}
+
+.auction-card-body .card-buttons .btn{
+    flex:1;
+}
+
+.auction-card-body .card-buttons form{
+    flex:1;
+}
+
+.auction-card-body .card-buttons form .btn{
+    width:100%;
+}
+}
+
+@media(max-width:480px){
+
+    .hero h1{
+        font-size:30px;
+    }
+
+    .btn{
+        padding:11px 20px;
+    }
+
+    .auction-card > h2{
+        font-size:20px;
+    }
+
+    .countdown-box{
+        font-size:22px;
+    }
+
+    .auction-price-grid{
+    grid-template-columns:1fr;
+    }
+}

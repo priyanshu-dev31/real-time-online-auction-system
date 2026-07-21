@@ -1,0 +1,387 @@
+{% extends "base.html" %}
+
+{% block title %}
+Admin Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-dashboard-page">
+
+    <!-- Dashboard heading -->
+
+    <header class="admin-page-header">
+
+        <div>
+
+            <p class="admin-page-label">
+                Administration
+            </p>
+
+            <h1>
+                Admin Dashboard
+            </h1>
+
+            <p class="admin-page-description">
+                Monitor users, auctions and recent bidding activity.
+            </p>
+
+        </div>
+
+        <div class="admin-actions">
+
+            <a
+                href="{{ url_for('add_auction') }}"
+                class="btn">
+
+                <i class="fa-solid fa-plus"></i>
+                Add Auction
+
+            </a>
+
+            <a
+                href="{{ url_for('auctions') }}"
+                class="btn admin-secondary-btn">
+
+                <i class="fa-solid fa-list"></i>
+                Manage Auctions
+
+            </a>
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="btn admin-logout-btn">
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- Dashboard statistics -->
+
+    <section class="dashboard-grid">
+
+        <div class="dashboard-card">
+
+            <div class="dashboard-card-icon">
+                <i class="fa-solid fa-users"></i>
+            </div>
+
+            <div class="dashboard-card-content">
+
+                <p class="dashboard-card-label">
+                    Registered Users
+                </p>
+
+                <h2>
+                    {{ total_users }}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="dashboard-card">
+
+            <div class="dashboard-card-icon">
+                <i class="fa-solid fa-box-open"></i>
+            </div>
+
+            <div class="dashboard-card-content">
+
+                <p class="dashboard-card-label">
+                    Total Auctions
+                </p>
+
+                <h2>
+                    {{ total_auctions }}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="dashboard-card">
+
+            <div class="dashboard-card-icon">
+                <i class="fa-solid fa-gavel"></i>
+            </div>
+
+            <div class="dashboard-card-content">
+
+                <p class="dashboard-card-label">
+                    Total Bids
+                </p>
+
+                <h2>
+                    {{ total_bids }}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="dashboard-card">
+
+            <div class="dashboard-card-icon active-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+
+            <div class="dashboard-card-content">
+
+                <p class="dashboard-card-label">
+                    Active Auctions
+                </p>
+
+                <h2>
+                    {{ active_auctions }}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="dashboard-card">
+
+            <div class="dashboard-card-icon closed-icon">
+                <i class="fa-solid fa-circle-xmark"></i>
+            </div>
+
+            <div class="dashboard-card-content">
+
+                <p class="dashboard-card-label">
+                    Closed Auctions
+                </p>
+
+                <h2>
+                    {{ closed_auctions }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Recent bid activity -->
+
+    <section class="admin-section">
+
+        <div class="admin-section-heading">
+
+            <div>
+
+                <p class="admin-page-label">
+                    Recent Activity
+                </p>
+
+                <h2>
+                    Recent Bids
+                </h2>
+
+            </div>
+
+            <i class="fa-solid fa-clock-rotate-left"></i>
+
+        </div>
+
+        {% if recent_bids %}
+
+            <div class="activity-table-wrapper">
+
+                <table class="activity-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Bidder</th>
+                            <th>Auction</th>
+                            <th>Bid Amount</th>
+                            <th>Time</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for bid in recent_bids %}
+
+                            <tr>
+
+                                <td>
+                                    {{ bid.user.full_name }}
+                                </td>
+
+                                <td>
+
+                                    <a
+                                        href="{{ url_for('auction_details', auction_id=bid.auction.id) }}"
+                                        class="admin-table-link">
+
+                                        {{ bid.auction.title }}
+
+                                    </a>
+
+                                </td>
+
+                                <td class="admin-bid-amount">
+                                    ₹ {{ bid.bid_amount }}
+                                </td>
+
+                                <td>
+                                    {{ bid.bid_time.strftime("%d-%m-%Y %H:%M") }}
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="admin-empty-state">
+
+                <i class="fa-solid fa-gavel"></i>
+
+                <h3>No recent bids</h3>
+
+                <p>
+                    New bidding activity will appear here.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- Recently added auctions -->
+
+    <section class="admin-section">
+
+        <div class="admin-section-heading">
+
+            <div>
+
+                <p class="admin-page-label">
+                    Auction Management
+                </p>
+
+                <h2>
+                    Recently Added Auctions
+                </h2>
+
+            </div>
+
+            <i class="fa-solid fa-box-open"></i>
+
+        </div>
+
+        {% if recent_auctions %}
+
+            <div class="activity-table-wrapper">
+
+                <table class="activity-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Starting Price</th>
+                            <th>Current Price</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for auction in recent_auctions %}
+
+                            <tr>
+
+                                <td>
+
+                                    <a
+                                        href="{{ url_for('auction_details', auction_id=auction.id) }}"
+                                        class="admin-table-link">
+
+                                        {{ auction.title }}
+
+                                    </a>
+
+                                </td>
+
+                                <td>
+
+                                    {% if auction.status == "Active" %}
+
+                                        <span class="admin-status admin-status-active">
+                                            Active
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="admin-status admin-status-closed">
+                                            Closed
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+                                    ₹ {{ auction.starting_price }}
+                                </td>
+
+                                <td class="admin-bid-amount">
+                                    ₹ {{ auction.current_price }}
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="admin-empty-state">
+
+                <i class="fa-solid fa-box-open"></i>
+
+                <h3>No auctions available</h3>
+
+                <p>
+                    Auctions created by the administrator will appear here.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+{% endblock %}

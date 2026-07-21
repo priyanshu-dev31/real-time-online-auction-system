@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="A secure and transparent online auction platform.">
+
+    <title>
+        {% block title %}Online Auction System{% endblock %}
+    </title>
+
+    <!-- Google Font -->
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- Global CSS -->
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}">
+
+<!-- Navbar -->
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/navbar.css') }}">
+
+<!-- Home -->
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/home.css') }}">
+
+<!-- Auction -->
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/auction.css') }}">
+
+<!-- Forms -->
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/forms.css') }}">
+
+<!-- Dashboard -->
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+<!-- Footer -->
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/footer.css') }}">
+
+<!-- Responsive -->
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/responsive.css') }}">
+
+    {% block extra_css %}{% endblock %}
+
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+<header class="main-header">
+
+    <nav class="navbar">
+
+        <a href="{{ url_for('home') }}"
+           class="logo">
+
+            <span class="logo-icon">
+                <i class="fa-solid fa-gavel"></i>
+            </span>
+
+            <span>Online Auction</span>
+
+        </a>
+
+        <!-- Mobile Menu Button -->
+
+        <button class="menu-toggle"
+                id="menuToggle"
+                type="button"
+                aria-label="Open navigation menu"
+                aria-expanded="false">
+
+            <i class="fa-solid fa-bars"></i>
+
+        </button>
+
+        <div class="navbar-content"
+             id="navbarContent">
+
+            <ul class="nav-links">
+
+                {% if "user_id" not in session %}
+
+                    <li>
+                        <a href="{{ url_for('home') }}"
+                           class="{% if request.endpoint == 'home' %}active{% endif %}">
+
+                            <i class="fa-solid fa-house"></i>
+                            Home
+
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ url_for('auctions') }}"
+                           class="{% if request.endpoint == 'auctions' %}active{% endif %}">
+
+                            <i class="fa-solid fa-box-open"></i>
+                            Auctions
+
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ url_for('login') }}"
+                           class="{% if request.endpoint == 'login' %}active{% endif %}">
+
+                            <i class="fa-solid fa-right-to-bracket"></i>
+                            Login
+
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ url_for('register') }}"
+                           class="nav-register">
+
+                            <i class="fa-solid fa-user-plus"></i>
+                            Register
+
+                        </a>
+                    </li>
+
+                {% elif session.get("role") == "admin" %}
+
+                    <li>
+                        <a href="{{ url_for('home') }}"
+                           class="{% if request.endpoint == 'home' %}active{% endif %}">
+
+                            <i class="fa-solid fa-house"></i>
+                            Home
+
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ url_for('admin') }}"
+                           class="{% if request.endpoint == 'admin' %}active{% endif %}">
+
+                            <i class="fa-solid fa-chart-line"></i>
+                            Dashboard
+
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ url_for('auctions') }}"
+                           class="{% if request.endpoint == 'auctions' %}active{% endif %}">
+
+                            <i class="fa-solid fa-box-open"></i>
+                            Auctions
+
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ url_for('add_auction') }}"
+                           class="{% if request.endpoint == 'add_auction' %}active{% endif %}">
+
+                            <i class="fa-solid fa-circle-plus"></i>
+                            Add Auction
+
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ url_for('logout') }}"
+                           class="logout-link">
+
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                            Logout
+
+                        </a>
+                    </li>
+
+                {% else %}
+
+                    <li>
+                        <a href="{{ url_for('home') }}"
+                           class="{% if request.endpoint == 'home' %}active{% endif %}">
+
+                            <i class="fa-solid fa-house"></i>
+                            Home
+
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ url_for('auctions') }}"
+                           class="{% if request.endpoint == 'auctions' %}active{% endif %}">
+
+                            <i class="fa-solid fa-box-open"></i>
+                            Auctions
+
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ url_for('my_bids') }}"
+                           class="{% if request.endpoint == 'my_bids' %}active{% endif %}">
+
+                            <i class="fa-solid fa-gavel"></i>
+                            My Bids
+
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ url_for('logout') }}"
+                           class="logout-link">
+
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                            Logout
+
+                        </a>
+                    </li>
+
+                {% endif %}
+
+            </ul>
+
+            {% if session.get("user_name") %}
+
+                <div class="user-info">
+
+                    <span class="user-avatar">
+                        <i class="fa-solid fa-user"></i>
+                    </span>
+
+                    <div class="user-text">
+
+                        <small>
+                            {% if session.get("role") == "admin" %}
+                                Administrator
+                            {% else %}
+                                Welcome
+                            {% endif %}
+                        </small>
+
+                        <strong>
+                            {{ session["user_name"] }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </nav>
+
+</header>
+
+
+<!-- ================= MAIN CONTENT ================= -->
+
+<main class="main-content">
+
+    <!-- Flash Messages -->
+
+    <div class="flash-container">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                {% for category, message in messages %}
+
+                    <div class="alert alert-{{ category }}">
+
+                        <span class="alert-icon">
+
+                            {% if category == "success" %}
+
+                                <i class="fa-solid fa-circle-check"></i>
+
+                            {% elif category == "danger" or category == "error" %}
+
+                                <i class="fa-solid fa-circle-exclamation"></i>
+
+                            {% elif category == "warning" %}
+
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+
+                            {% else %}
+
+                                <i class="fa-solid fa-circle-info"></i>
+
+                            {% endif %}
+
+                        </span>
+
+                        <span class="alert-message">
+                            {{ message }}
+                        </span>
+
+                        <button class="alert-close"
+                                type="button"
+                                aria-label="Close alert">
+
+                            <i class="fa-solid fa-xmark"></i>
+
+                        </button>
+
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+    </div>
+
+    {% block content %}{% endblock %}
+
+</main>
+
+
+<!-- Footer -->
+
+<footer class="main-footer">
+
+    <h3>
+
+        <i class="fa-solid fa-gavel"></i>
+
+        Online Auction System
+
+    </h3>
+
+    <p>
+
+        Secure • Transparent • Real-Time Bidding Platform
+
+    </p>
+
+    <small>
+
+        © 2026 Priyanshu Singh | BCA Major Project
+
+    </small>
+
+</footer>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+
+    const menuToggle = document.getElementById("menuToggle");
+    const navbarContent = document.getElementById("navbarContent");
+
+    if (menuToggle && navbarContent) {
+
+        menuToggle.addEventListener("click", function () {
+
+            navbarContent.classList.toggle("show");
+
+            const menuIsOpen =
+                navbarContent.classList.contains("show");
+
+            menuToggle.setAttribute(
+                "aria-expanded",
+                menuIsOpen
+            );
+
+            menuToggle.innerHTML = menuIsOpen
+                ? '<i class="fa-solid fa-xmark"></i>'
+                : '<i class="fa-solid fa-bars"></i>';
+
+        });
+
+
+        document.querySelectorAll(".nav-links a").forEach(function (link) {
+
+            link.addEventListener("click", function () {
+
+                navbarContent.classList.remove("show");
+
+                menuToggle.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+                menuToggle.innerHTML =
+                    '<i class="fa-solid fa-bars"></i>';
+
+            });
+
+        });
+
+    }
+
+
+    // Close flash message manually
+
+    document.querySelectorAll(".alert-close").forEach(function (button) {
+
+        button.addEventListener("click", function () {
+
+            const alert = button.closest(".alert");
+
+            if (alert) {
+
+                alert.classList.add("alert-hide");
+
+                setTimeout(function () {
+                    alert.remove();
+                }, 300);
+
+            }
+
+        });
+
+    });
+
+
+    // Automatically hide flash messages after 5 seconds
+
+    setTimeout(function () {
+
+        document.querySelectorAll(".alert").forEach(function (alert) {
+
+            alert.classList.add("alert-hide");
+
+            setTimeout(function () {
+                alert.remove();
+            }, 300);
+
+        });
+
+    }, 5000);
+
+</script>
+
+{% block extra_js %}{% endblock %}
+
+</body>
+
+</html>

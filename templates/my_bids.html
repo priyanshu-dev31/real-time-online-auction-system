@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}
+My Bids
+{% endblock %}
+
+{% block content %}
+
+<h1>My Bids</h1>
+
+{% if bids %}
+
+<table>
+
+<tr>
+    <th>Auction</th>
+    <th>Bid Amount</th>
+    <th>Bid Time</th>
+</tr>
+
+{% for bid in bids %}
+
+<tr>
+    <td>{{ bid.auction.title }}</td>
+    <td>₹ {{ bid.bid_amount }}</td>
+    <td>{{ bid.bid_time }}</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% else %}
+
+<p>You haven't placed any bids yet.</p>
+
+{% endif %}
+
+{% endblock %}

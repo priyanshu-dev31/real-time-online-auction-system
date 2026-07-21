@@ -1,0 +1,186 @@
+/* ===================================
+   GLOBAL
+=================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins', Arial, Helvetica, sans-serif;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    background:#f4f6f9;
+    color:#2d3436;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    line-height:1.6;
+}
+
+a{
+    text-decoration:none;
+}
+
+img{
+    display:block;
+    max-width:100%;
+}
+
+button,
+input,
+textarea,
+select{
+    font:inherit;
+}
+
+
+/* ===================================
+   MAIN CONTAINER
+=================================== */
+
+.container{
+    width:90%;
+    max-width:1200px;
+    margin:35px auto;
+    flex:1;
+}
+
+.card{
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
+
+
+/* ===================================
+   BUTTONS
+=================================== */
+
+.btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:12px 28px;
+    border:none;
+    border-radius:10px;
+    background:#f59e0b;
+    color:white;
+    text-decoration:none;
+    font-weight:600;
+    cursor:pointer;
+    transition:transform .3s, background-color .3s;
+}
+
+.btn:hover{
+    transform:translateY(-3px);
+}
+
+.btn-outline{
+    background:white;
+    color:#2563eb;
+}
+
+
+/* ===================================
+   GENERAL TABLE
+=================================== */
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+table th{
+    background:#34495e;
+    color:white;
+    padding:14px;
+}
+
+table td{
+    padding:12px;
+    border:1px solid #ddd;
+    text-align:center;
+}
+
+table tr:nth-child(even){
+    background:#f8f9fa;
+}
+
+
+/* ===================================
+   ALERTS
+=================================== */
+
+.alert{
+    padding:15px;
+    margin-bottom:20px;
+    border-radius:8px;
+    font-weight:600;
+}
+
+.success{
+    background:#d4edda;
+    color:#155724;
+}
+
+.danger{
+    background:#f8d7da;
+    color:#721c24;
+}
+
+/* ===================================
+   ERROR PAGE
+=================================== */
+
+.error-page{
+    max-width:650px;
+    margin:70px auto;
+    padding:50px 30px;
+    text-align:center;
+    background:white;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.error-code{
+    color:#2563eb;
+    font-size:90px;
+    font-weight:700;
+    line-height:1;
+    margin-bottom:20px;
+}
+
+.error-page h1{
+    color:#1f2937;
+    font-size:34px;
+    margin-bottom:12px;
+}
+
+.error-message{
+    color:#6b7280;
+    max-width:500px;
+    margin:0 auto 28px;
+}
+
+.error-actions{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.error-secondary-btn{
+    background:#2563eb;
+}
+
+.error-secondary-btn:hover{
+    background:#1d4ed8;
+}

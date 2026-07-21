@@ -1,0 +1,502 @@
+/* ===================================
+   AUCTION GRID
+=================================== */
+
+.auction-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+    gap:30px;
+    margin-top:40px;
+}
+
+
+/* ===================================
+   AUCTION CARD
+=================================== */
+
+.auction-card{
+    background:white;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+    transition:transform .3s, box-shadow .3s;
+    display:flex;
+    flex-direction:column;
+}
+
+.auction-card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 18px 35px rgba(0,0,0,.14);
+}
+
+
+/* ===================================
+   AUCTION IMAGE
+=================================== */
+
+.auction-image-wrapper{
+    position:relative;
+    height:240px;
+    overflow:hidden;
+}
+
+.auction-image{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+    transition:transform .4s;
+}
+
+.auction-image-wrapper .auction-image{
+    height:100%;
+}
+
+.auction-card:hover .auction-image{
+    transform:scale(1.04);
+}
+
+
+/* ===================================
+   IMAGE STATUS BADGE
+=================================== */
+
+.auction-status{
+    position:absolute;
+    top:15px;
+    right:15px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:7px 14px;
+    border-radius:20px;
+    color:#ffffff;
+    font-size:13px;
+    font-weight:600;
+    line-height:1;
+}
+
+.auction-status.status-active{
+    background:#16a34a;
+}
+
+.auction-status.status-closed{
+    background:#dc2626;
+}
+
+
+/* ===================================
+   HOMEPAGE AUCTION CARD BODY
+=================================== */
+
+.auction-card-body{
+    padding:22px;
+    display:flex;
+    flex-direction:column;
+    flex:1;
+}
+
+.auction-card-body h3{
+    color:#1f2937;
+    font-size:21px;
+    margin-bottom:15px;
+}
+
+.auction-price-label{
+    color:#6b7280;
+    font-size:14px;
+    margin-bottom:4px;
+}
+
+.auction-price{
+    color:#2563eb;
+    font-size:28px;
+    font-weight:700;
+    margin-bottom:20px;
+}
+
+.auction-card-button{
+    margin-top:auto;
+}
+
+
+/* ===================================
+   ALL AUCTIONS PAGE CARD CONTENT
+=================================== */
+
+.auction-card > h2{
+    color:#1f2937;
+    font-size:22px;
+    margin:20px 20px 12px;
+    text-align:center;
+}
+
+.auction-card > p{
+    margin:8px 20px;
+    text-align:center;
+    color:#4b5563;
+}
+
+.auction-card-status{
+    margin:12px 0 18px;
+}
+
+
+/* ===================================
+   STATUS INSIDE CARD
+=================================== */
+
+.auction-status-text{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:fit-content;
+    padding:6px 14px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:600;
+}
+
+.auction-status-text.status-active{
+    color:#15803d;
+    background:#dcfce7;
+}
+
+.auction-status-text.status-closed{
+    color:#b91c1c;
+    background:#fee2e2;
+}
+
+
+/* ===================================
+   AUCTION CARD BUTTONS
+=================================== */
+
+.card-buttons{
+    margin-top:auto;
+    padding:15px 15px 20px;
+    text-align:center;
+}
+
+.card-buttons .btn{
+    margin:5px;
+}
+
+.card-buttons form{
+    display:inline;
+}
+
+.delete-btn{
+    background:#e74c3c;
+    border:none;
+    cursor:pointer;
+}
+
+.delete-btn:hover{
+    background:#c0392b;
+}
+
+
+/* ===================================
+   SEARCH FORM
+=================================== */
+
+.search-form{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    max-width:650px;
+    margin:0 auto;
+}
+
+.search-form input{
+    flex:1;
+}
+
+.search-form .btn{
+    flex-shrink:0;
+    border:none;
+    cursor:pointer;
+}
+
+
+/* ===================================
+   FILTER BUTTONS
+=================================== */
+
+.filter-buttons{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    margin-bottom:30px;
+    flex-wrap:wrap;
+}
+
+
+/* ===================================
+   SORT FORM
+=================================== */
+
+.sort-form{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:12px;
+    margin-bottom:25px;
+}
+
+.sort-form label{
+    flex-shrink:0;
+}
+
+.sort-form select{
+    width:auto;
+    min-width:180px;
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #d1d5db;
+    font-size:16px;
+}
+
+
+/* ===================================
+   EMPTY AUCTION STATE
+=================================== */
+
+.empty-state{
+    background:white;
+    padding:50px 20px;
+    border-radius:16px;
+    text-align:center;
+    box-shadow:0 8px 20px rgba(0,0,0,.06);
+}
+
+.empty-state i{
+    color:#9ca3af;
+    font-size:42px;
+    margin-bottom:15px;
+}
+
+.empty-state h3{
+    color:#1f2937;
+    margin-bottom:8px;
+}
+
+.empty-state p{
+    color:#6b7280;
+}
+
+
+/* ===================================
+   AUCTION DETAILS PAGE
+=================================== */
+
+.section{
+    margin:30px 0;
+}
+
+.info-box{
+    background:#f8f9fa;
+    padding:20px;
+    border-radius:10px;
+}
+
+.product-image{
+    display:block;
+    width:100%;
+    max-width:450px;
+    height:300px;
+    margin:0 auto;
+    object-fit:cover;
+    border-radius:12px;
+}
+
+.countdown-box{
+    background:#2c3e50;
+    color:white;
+    padding:20px;
+    border-radius:10px;
+    text-align:center;
+    font-size:28px;
+    font-weight:700;
+}
+
+.bid-form{
+    background:#f8f9fa;
+    padding:25px;
+    border-radius:10px;
+}
+
+.closed-box{
+    background:#f8d7da;
+    color:#721c24;
+    padding:20px;
+    text-align:center;
+    border-radius:10px;
+}
+
+.winner-box{
+    background:#d4edda;
+    padding:25px;
+    border-radius:10px;
+    text-align:center;
+}
+
+.winner-name{
+    color:#27ae60;
+    font-size:30px;
+    font-weight:700;
+}
+
+.winner-price{
+    font-size:24px;
+    margin-top:10px;
+}
+
+
+/* ===================================
+   AVAILABLE AUCTIONS PAGE
+=================================== */
+
+.auctions-page{
+    max-width:1200px;
+    margin:0 auto;
+}
+
+.auctions-page-header{
+    max-width:700px;
+    margin:0 auto 35px;
+    text-align:center;
+}
+
+.auctions-page-label{
+    color:#2563eb;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    margin-bottom:6px;
+}
+
+.auctions-page-header h1{
+    color:#1f2937;
+    font-size:38px;
+    line-height:1.2;
+    margin-bottom:10px;
+}
+
+.auctions-page-header > p:last-child{
+    color:#6b7280;
+}
+
+
+/* Auction controls */
+
+.auction-controls{
+    padding:25px;
+    margin-bottom:35px;
+    background:white;
+    border-radius:16px;
+    box-shadow:0 8px 20px rgba(0,0,0,.07);
+}
+
+.auction-controls .filter-buttons{
+    margin:22px 0;
+}
+
+.filter-btn{
+    color:#374151;
+    background:#f3f4f6;
+    border:1px solid #e5e7eb;
+}
+
+.filter-btn:hover{
+    color:#ffffff;
+    background:#2563eb;
+}
+
+.filter-btn-active{
+    color:#ffffff;
+    background:#2563eb;
+    border-color:#2563eb;
+}
+
+
+/* Auction card content */
+
+.auction-card-title{
+    color:#1f2937;
+    font-size:22px;
+    line-height:1.35;
+    margin-bottom:20px;
+}
+
+.auction-price-grid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:12px;
+    margin-bottom:20px;
+}
+
+.auction-price-item{
+    padding:14px;
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+}
+
+.auction-price-label{
+    color:#6b7280;
+    font-size:13px;
+    margin-bottom:4px;
+}
+
+.auction-starting-price{
+    color:#374151;
+    font-size:18px;
+    font-weight:600;
+}
+
+.auction-current-price{
+    color:#2563eb;
+    font-size:20px;
+    font-weight:700;
+}
+
+
+/* Card actions */
+
+.auction-card-body .card-buttons{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:auto;
+    padding:18px 0 0;
+    border-top:1px solid #e5e7eb;
+}
+
+.auction-card-body .card-buttons .btn{
+    margin:0;
+    padding:10px 16px;
+}
+
+.auction-card-body .card-buttons form{
+    display:inline-flex;
+}
+
+.edit-btn{
+    background:#2563eb;
+}
+
+.edit-btn:hover{
+    background:#1d4ed8;
+}
+
+.auctions-empty-state{
+    margin-top:35px;
+}
+
+.auctions-empty-state .btn{
+    margin-top:20px;
+}

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}
+Register
+{% endblock %}
+
+{% block content %}
+
+<div class="auth-card">
+
+    <h1 class="auth-title">
+        Create Account
+    </h1>
+
+    <p class="auth-subtitle">
+        Enter your details to join the auction platform.
+    </p>
+
+    <form method="POST">
+
+        <div class="form-group">
+
+            <label for="full-name">
+                Full Name
+            </label>
+
+            <input
+                type="text"
+                id="full-name"
+                name="full_name"
+                placeholder="Enter your full name"
+                autocomplete="name"
+                required>
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="email">
+                Email Address
+            </label>
+
+            <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your email address"
+                autocomplete="email"
+                required>
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="password">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Create a password"
+                autocomplete="new-password"
+                required>
+
+        </div>
+
+        <button type="submit" class="btn auth-btn">
+            Create Account
+        </button>
+
+    </form>
+
+    <div class="auth-footer">
+
+        <span>Already have an account?</span>
+
+        <a href="{{ url_for('login') }}">
+            Login
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,714 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ auction.title }}
+{% endblock %}
+
+{% block content %}
+<div
+    class="auction-details-page"
+    data-auction-id="{{ auction.id }}"
+    data-end-time="{{ auction.end_time.strftime('%Y-%m-%dT%H:%M:%S') }}"
+    data-auction-status="{{ auction.status }}">
+    <!-- Back link -->
+
+    <a href="{{ url_for('auctions') }}"
+       class="details-back-link">
+
+        <i class="fa-solid fa-arrow-left"></i>
+        Back to Auctions
+
+    </a>
+
+
+    <!-- Page heading -->
+
+    <div class="auction-details-header">
+
+        <div>
+
+            <p class="details-eyebrow">
+                Auction Details
+            </p>
+
+            <h1>{{ auction.title }}</h1>
+
+        </div>
+
+        {% if auction.status == "Active" %}
+
+            <span class="details-status details-status-active">
+                Active
+            </span>
+
+        {% else %}
+
+            <span class="details-status details-status-closed">
+                Closed
+            </span>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- Main auction information -->
+
+    <div class="auction-details-layout">
+
+        <!-- Product image -->
+
+        <div class="auction-image-panel">
+
+            {% if auction.image %}
+
+                <img
+                    src="{{ url_for('static', filename='uploads/' + auction.image) }}"
+                    alt="{{ auction.title }}"
+                    class="product-image">
+
+            {% elif auction.image_url %}
+
+                <img
+                    src="{{ auction.image_url }}"
+                    alt="{{ auction.title }}"
+                    class="product-image">
+
+            {% else %}
+
+                <img
+                    src="{{ url_for('static', filename='images/no-image.png') }}"
+                    alt="No image available"
+                    class="product-image">
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- Auction information -->
+
+        <div class="auction-information-panel">
+
+            <div class="current-bid-box">
+
+                <p class="current-bid-label">
+                    Current Price
+                </p>
+
+                <p class="current-bid-price">
+
+                    ₹
+                    <span id="current-price">
+                        {{ auction.current_price }}
+                    </span>
+
+                </p>
+
+            </div>
+
+
+            <div class="auction-meta-grid">
+
+                <div class="auction-meta-item">
+
+                    <span class="meta-icon">
+                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                    </span>
+
+                    <div>
+
+                        <p class="meta-label">
+                            Starting Price
+                        </p>
+
+                        <p class="meta-value">
+                            ₹ {{ auction.starting_price }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="auction-meta-item">
+
+                    <span class="meta-icon">
+                        <i class="fa-solid fa-calendar-plus"></i>
+                    </span>
+
+                    <div>
+
+                        <p class="meta-label">
+                            Start Time
+                        </p>
+
+                        <p class="meta-value">
+                            {{ auction.start_time.strftime("%d %b %Y, %I:%M %p") }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="auction-meta-item">
+
+                    <span class="meta-icon">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </span>
+
+                    <div>
+
+                        <p class="meta-label">
+                            End Time
+                        </p>
+
+                        <p class="meta-value">
+                            {{ auction.end_time.strftime("%d %b %Y, %I:%M %p") }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="auction-description">
+
+                <h2>Description</h2>
+
+                <p>
+                    {{ auction.description }}
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Countdown -->
+
+    <section class="details-section">
+
+        <div class="details-section-heading">
+
+            <div>
+
+                <p class="details-eyebrow">
+                    Auction Timer
+                </p>
+
+                <h2>Time Remaining</h2>
+
+            </div>
+
+            <i class="fa-regular fa-clock"></i>
+
+        </div>
+
+        <div class="countdown-box">
+
+            <p id="countdown">
+                Calculating...
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- Bid section -->
+
+    <section class="details-section"
+             id="bid-section">
+
+        {% if auction.status == "Active" %}
+
+            {% if session.get("role") == "admin" %}
+
+                <div class="auction-notice admin-notice">
+
+                    <i class="fa-solid fa-user-shield"></i>
+
+                    <div>
+
+                        <h2>Administrator View</h2>
+
+                        <p>
+                            Administrators can monitor this auction but cannot
+                            place bids.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            {% elif "user_id" in session %}
+
+                <div class="bid-form">
+
+                    <div class="details-section-heading">
+
+                        <div>
+
+                            <p class="details-eyebrow">
+                                Participate
+                            </p>
+
+                            <h2>Place Your Bid</h2>
+
+                        </div>
+
+                        <i class="fa-solid fa-gavel"></i>
+
+                    </div>
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('place_bid', auction_id=auction.id) }}">
+
+                        <div class="form-group">
+
+                            <label for="bid-amount">
+                                Bid Amount
+                            </label>
+
+                            <input
+                                id="bid-amount"
+                                type="number"
+                                name="bid_amount"
+                                step="0.01"
+                                min="{{ auction.current_price }}"
+                                placeholder="Enter an amount higher than the current price"
+                                required>
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn">
+
+                            <i class="fa-solid fa-gavel"></i>
+                            Place Bid
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            {% else %}
+
+                <div class="auction-notice login-notice">
+
+                    <i class="fa-solid fa-right-to-bracket"></i>
+
+                    <div>
+
+                        <h2>Login Required</h2>
+
+                        <p>
+                            Please log in to participate in this auction.
+                        </p>
+
+                        <a href="{{ url_for('login') }}"
+                           class="btn">
+
+                            Login to Bid
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+        {% else %}
+
+            <div class="closed-box">
+
+                <i class="fa-solid fa-lock"></i>
+
+                <div>
+
+                    <h2>Auction Closed</h2>
+
+                    <p>
+                        Bidding is no longer available for this auction.
+                    </p>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- Bid history -->
+
+    <section class="details-section">
+
+        <div class="details-section-heading">
+
+            <div>
+
+                <p class="details-eyebrow">
+                    Activity
+                </p>
+
+                <h2>Bid History</h2>
+
+            </div>
+
+            <i class="fa-solid fa-clock-rotate-left"></i>
+
+        </div>
+
+        <div id="bid-history">
+
+            {% if bids %}
+
+                <div class="bid-table-wrapper">
+
+                    <table class="bid-history-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>Bidder</th>
+                                <th>Bid Amount</th>
+                                <th>Bid Time</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for bid in bids %}
+
+                                <tr>
+
+                                    <td>
+                                        {{ bid.user.full_name }}
+                                    </td>
+
+                                    <td class="bid-amount-cell">
+                                        ₹ {{ bid.bid_amount }}
+                                    </td>
+
+                                    <td>
+                                        {{ bid.bid_time.strftime("%d-%m-%Y %H:%M") }}
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-bid-history">
+
+                    <i class="fa-solid fa-gavel"></i>
+
+                    <h3>No bids placed yet</h3>
+
+                    <p>
+                        The first bid will appear here.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+
+    <!-- Winner -->
+
+    {% if auction.status == "Closed" %}
+
+        <section class="details-section">
+
+            <div class="winner-box">
+
+                <i class="fa-solid fa-trophy winner-icon"></i>
+
+                <h2>Auction Winner</h2>
+
+                {% if winner %}
+
+                    <p class="winner-name">
+                        {{ winner.user.full_name }}
+                    </p>
+
+                    <p class="winner-price">
+                        Winning Bid: ₹ {{ winner.bid_amount }}
+                    </p>
+
+                {% else %}
+
+                    <p class="winner-empty">
+                        No bids were placed in this auction.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+    {% endif %}
+
+
+    <div class="details-bottom-navigation">
+
+        <a href="{{ url_for('auctions') }}"
+           class="btn">
+
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Auctions
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const auctionPage =
+    document.querySelector(".auction-details-page");
+
+const auctionId =
+    Number(auctionPage.dataset.auctionId);
+
+const auctionEndTime =
+    new Date(auctionPage.dataset.endTime).getTime();
+
+const initialAuctionStatus =
+    auctionPage.dataset.auctionStatus;
+
+
+
+    const countdownElement =
+        document.getElementById("countdown");
+
+    let countdownTimer = null;
+    let auctionRefreshTimer = null;
+
+
+    function formatCurrency(value) {
+
+        const amount = Number(value);
+
+        if (!Number.isFinite(amount)) {
+            return value;
+        }
+
+        return amount.toLocaleString("en-IN", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+    }
+
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+
+    }
+
+
+    function updateCountdown() {
+
+        const now = Date.now();
+        const distance = auctionEndTime - now;
+
+        if (distance <= 0) {
+
+            clearInterval(countdownTimer);
+
+            countdownElement.textContent = "Auction Closed";
+            countdownElement.classList.add("countdown-closed");
+
+            fetch(`/check-auction/${auctionId}`)
+                .then(response => response.json())
+                .then(data => {
+
+                    if (data.status === "Closed") {
+
+                        if (auctionRefreshTimer) {
+                            clearInterval(auctionRefreshTimer);
+                        }
+
+                        window.location.reload();
+
+                    }
+
+                })
+                .catch(error => {
+                    console.error("Auction closing check failed:", error);
+                });
+
+            return;
+
+        }
+
+        const days =
+            Math.floor(distance / (1000 * 60 * 60 * 24));
+
+        const hours =
+            Math.floor(
+                (distance % (1000 * 60 * 60 * 24)) /
+                (1000 * 60 * 60)
+            );
+
+        const minutes =
+            Math.floor(
+                (distance % (1000 * 60 * 60)) /
+                (1000 * 60)
+            );
+
+        const seconds =
+            Math.floor(
+                (distance % (1000 * 60)) /
+                1000
+            );
+
+        countdownElement.textContent =
+            `${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+    }
+
+
+    function buildBidHistory(bids) {
+
+        if (!Array.isArray(bids) || bids.length === 0) {
+
+            return `
+                <div class="empty-bid-history">
+                    <i class="fa-solid fa-gavel"></i>
+                    <h3>No bids placed yet</h3>
+                    <p>The first bid will appear here.</p>
+                </div>
+            `;
+
+        }
+
+        let rows = "";
+
+        bids.forEach(function(bid) {
+
+            rows += `
+                <tr>
+                    <td>${escapeHtml(bid.user)}</td>
+                    <td class="bid-amount-cell">
+                        ₹ ${formatCurrency(bid.amount)}
+                    </td>
+                    <td>${escapeHtml(bid.time)}</td>
+                </tr>
+            `;
+
+        });
+
+        return `
+            <div class="bid-table-wrapper">
+                <table class="bid-history-table">
+                    <thead>
+                        <tr>
+                            <th>Bidder</th>
+                            <th>Bid Amount</th>
+                            <th>Bid Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows}
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+    }
+
+
+    function refreshAuction() {
+
+        fetch(`/auction-data/${auctionId}`)
+            .then(response => {
+
+                if (!response.ok) {
+                    throw new Error("Unable to refresh auction");
+                }
+
+                return response.json();
+
+            })
+            .then(data => {
+
+                document.getElementById("current-price").textContent =
+                    formatCurrency(data.current_price);
+
+                document.getElementById("bid-history").innerHTML =
+                    buildBidHistory(data.bids);
+
+                if (data.status === "Closed") {
+
+                    clearInterval(auctionRefreshTimer);
+                    window.location.reload();
+
+                }
+
+            })
+            .catch(error => {
+                console.error("Auction refresh failed:", error);
+            });
+
+    }
+
+
+    if (initialAuctionStatus === "Active") {
+
+    updateCountdown();
+
+    countdownTimer =
+        setInterval(updateCountdown, 1000);
+
+    refreshAuction();
+
+    auctionRefreshTimer =
+        setInterval(refreshAuction, 2000);
+
+} else {
+
+    countdownElement.textContent = "Auction Closed";
+
+    countdownElement.classList.add(
+        "countdown-closed"
+    );
+
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+
+{% block title %}
+Online Auction System
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <span class="hero-badge">
+            <i class="fa-solid fa-gavel"></i>
+            Online Auction Platform
+        </span>
+
+        <h1>
+            Bid Smart. Win Big.
+        </h1>
+
+        <p>
+            Discover active auctions, place bids and track prices easily.
+        </p>
+
+        <div class="hero-actions">
+
+            <a href="{{ url_for('auctions') }}"
+               class="btn">
+
+                <i class="fa-solid fa-fire"></i>
+                Browse Auctions
+
+            </a>
+
+            {% if "user_id" not in session %}
+
+                <a href="{{ url_for('register') }}"
+                   class="btn btn-outline">
+
+                    <i class="fa-solid fa-user-plus"></i>
+                    Register Now
+
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- Platform Statistics -->
+
+<section class="home-section">
+
+    <div class="section-heading">
+
+        <h2>Platform Statistics</h2>
+
+        <p>
+            A quick overview of activity on the platform.
+        </p>
+
+    </div>
+
+    <div class="stats-grid">
+
+    <div class="stats-card">
+
+        <div class="stats-icon">
+            <i class="fa-solid fa-users"></i>
+        </div>
+
+        <h3>{{ total_users }}</h3>
+
+        <p>Registered Users</p>
+
+    </div>
+
+    <div class="stats-card">
+
+        <div class="stats-icon">
+            <i class="fa-solid fa-box-open"></i>
+        </div>
+
+        <h3>{{ total_auctions }}</h3>
+
+        <p>Total Auctions</p>
+
+    </div>
+
+    <div class="stats-card">
+
+        <div class="stats-icon">
+            <i class="fa-solid fa-gavel"></i>
+        </div>
+
+        <h3>{{ total_bids }}</h3>
+
+        <p>Total Bids</p>
+
+    </div>
+
+</div>
+</section>
+
+
+<!-- Featured Auctions -->
+
+<section class="home-section">
+
+    <div class="section-heading">
+
+        <h2>Featured Auctions</h2>
+
+        <p>
+            Explore some of the latest auctions.
+        </p>
+
+    </div>
+
+    {% if featured_auctions %}
+
+        <div class="auction-grid">
+
+            {% for auction in featured_auctions %}
+
+                <div class="auction-card">
+
+                    <div class="auction-image-wrapper">
+
+                        {% if auction.image %}
+
+                            <img
+                                src="{{ url_for('static', filename='uploads/' + auction.image) }}"
+                                alt="{{ auction.title }}"
+                                class="auction-image">
+
+                        {% elif auction.image_url %}
+
+                            <img
+                                src="{{ auction.image_url }}"
+                                alt="{{ auction.title }}"
+                                class="auction-image">
+
+                        {% else %}
+
+                            <img
+                                src="{{ url_for('static', filename='images/no-image.png') }}"
+                                alt="No image available"
+                                class="auction-image">
+
+                        {% endif %}
+
+                        {% if auction.status == "Active" %}
+
+                            <span class="auction-status status-active">
+                                Live
+                            </span>
+
+                        {% else %}
+
+                            <span class="auction-status status-closed">
+                                Closed
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                    <div class="auction-card-body">
+
+                        <h3>{{ auction.title }}</h3>
+
+                        <p class="auction-price-label">
+                            Current Bid
+                        </p>
+
+                        <p class="auction-price">
+                            ₹ {{ auction.current_price }}
+                        </p>
+
+                        <a
+                            href="{{ url_for('auction_details', auction_id=auction.id) }}"
+                            class="btn auction-card-button">
+
+                            View Auction
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <i class="fa-solid fa-box-open"></i>
+
+            <h3>No auctions available</h3>
+
+            <p>
+                New auctions will appear here.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<!-- Why Choose Us -->
+
+<section class="home-section why-us">
+
+    <div class="section-heading">
+
+        <h2>Why Choose Our Platform?</h2>
+
+        <p>
+            Simple, secure and transparent online bidding.
+        </p>
+
+    </div>
+
+    <div class="why-grid">
+
+        <div class="why-card">
+
+            <div class="why-icon">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+
+            <h3>Secure Bidding</h3>
+
+            <p>
+                User authentication helps keep bidding activity secure.
+            </p>
+
+        </div>
+
+        <div class="why-card">
+
+            <div class="why-icon">
+                <i class="fa-solid fa-rotate"></i>
+            </div>
+
+            <h3>Live Updates</h3>
+
+            <p>
+                Prices and bid history update automatically using AJAX polling.
+            </p>
+
+        </div>
+
+        <div class="why-card">
+
+            <div class="why-icon">
+                <i class="fa-solid fa-scale-balanced"></i>
+            </div>
+
+            <h3>Transparent Auctions</h3>
+
+            <p>
+                Users can view current prices and complete bid history.
+            </p>
+
+        </div>
+
+        <div class="why-card">
+
+            <div class="why-icon">
+                <i class="fa-solid fa-mobile-screen"></i>
+            </div>
+
+            <h3>Easy to Use</h3>
+
+            <p>
+                A simple interface designed for desktop and mobile devices.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

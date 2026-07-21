@@ -1,0 +1,41 @@
+# Environment variables
+.env
+.env.*
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Flask
+instance/
+.flaskenv
+
+# IDE settings
+.vscode/
+.idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Database backups
+*.sql
+*.sqlite
+*.db
+
+# Uploaded user images
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Backup files
+app_backup.py
+*.bak

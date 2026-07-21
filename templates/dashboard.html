@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+User Dashboard
+{% endblock %}
+
+{% block content %}
+
+<h1>Welcome {{ user_name }}</h1>
+
+<p>You have successfully logged into your account.</p>
+
+<hr>
+
+<h3>Available Options</h3>
+
+<a href="/auctions" class="btn">View Auctions</a>
+
+<a href="#" class="btn">My Profile</a>
+
+<a href="/my-bids" class="btn">My Bids</a>
+
+<a href="/logout" class="btn">Logout</a>
+
+{% endblock %}
