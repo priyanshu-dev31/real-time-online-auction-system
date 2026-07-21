@@ -35,4 +35,4 @@ A web-based auction platform developed as a BCA major project using Flask, MySQL
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/real-time-online-auction-system.git
+git clone https://github.com/priyanshu-dev31/real-time-online-auction-system.git
