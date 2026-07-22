@@ -39,3 +39,11 @@ static/uploads/*
 # Backup files
 app_backup.py
 *.bak
+
+venv/
+__pycache__/
+*.pyc
+static/uploads/
+
+.env
+certs/
