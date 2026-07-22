@@ -7,6 +7,8 @@ from decimal import Decimal, InvalidOperation
 from functools import wraps
 from urllib.parse import urlparse
 from uuid import uuid4
+import cloudinary
+import cloudinary.uploader
 
 from flask import (
     Flask,
@@ -33,6 +35,11 @@ from models.user import User
 
 ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
 MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5 MB
+
+
+CLOUDINARY_FOLDER = "auction_images"
+
+cloudinary.config(secure=True)
 
 
 INDIA_TIMEZONE = ZoneInfo("Asia/Kolkata")
@@ -142,28 +149,65 @@ def allowed_image(filename: str) -> bool:
         in ALLOWED_IMAGE_EXTENSIONS
     )
 
+def save_uploaded_image(image) -> tuple[str, str]:
+    """
+    Upload an auction image to Cloudinary.
 
-def save_uploaded_image(image) -> str:
-    original_filename = secure_filename(image.filename or "")
+    Returns:
+        secure_url, public_id
+    """
+
+    original_filename = secure_filename(
+        image.filename or ""
+    )
 
     if not original_filename:
-        raise ValueError("Please select a valid image file.")
+        raise ValueError(
+            "Please select a valid image file."
+        )
 
     if not allowed_image(original_filename):
         raise ValueError(
             "Only PNG, JPG, JPEG and WebP images are allowed."
         )
 
-    unique_filename = f"{uuid4().hex}_{original_filename}"
+    public_id = f"auction_{uuid4().hex}"
 
-    image.save(
-        os.path.join(
-            app.config["UPLOAD_FOLDER"],
-            unique_filename,
+    try:
+        image.stream.seek(0)
+        upload_result = cloudinary.uploader.upload(
+    image.stream,
+
+    # Visible Media Library folder
+    asset_folder=CLOUDINARY_FOLDER,
+
+    # Keep the folder in the public ID as well
+    public_id=f"{CLOUDINARY_FOLDER}/{public_id}",
+
+    unique_filename=False,
+    overwrite=False,
+    resource_type="image",
+)
+
+    except Exception as error:
+        app.logger.exception(
+            "Cloudinary image upload failed"
         )
-    )
 
-    return unique_filename
+        raise ValueError(
+            "The image could not be uploaded. "
+            "Please try again."
+        ) from error
+
+    secure_url = upload_result.get("secure_url")
+    uploaded_public_id = upload_result.get("public_id")
+
+    if not secure_url or not uploaded_public_id:
+        raise ValueError(
+            "Cloudinary did not return the image URL."
+        )
+
+    return secure_url, uploaded_public_id
 
 
 def delete_uploaded_image(filename: str | None) -> None:
@@ -178,6 +222,80 @@ def delete_uploaded_image(filename: str | None) -> None:
     if os.path.isfile(image_path):
         os.remove(image_path)
 
+def get_cloudinary_public_id(
+    image_url: str | None,
+) -> str | None:
+    """
+    Get the public ID from an image uploaded by this app.
+    External image URLs are ignored.
+    """
+
+    if not image_url:
+        return None
+
+    parsed_url = urlparse(image_url)
+
+    if parsed_url.netloc.lower() != "res.cloudinary.com":
+        return None
+
+    marker = "/image/upload/"
+
+    if marker not in parsed_url.path:
+        return None
+
+    cloudinary_path = parsed_url.path.split(
+        marker,
+        1,
+    )[1]
+
+    path_parts = cloudinary_path.split("/")
+
+    # Remove Cloudinary version, for example v1723456789.
+    if (
+        path_parts
+        and path_parts[0].startswith("v")
+        and path_parts[0][1:].isdigit()
+    ):
+        path_parts = path_parts[1:]
+
+    if not path_parts:
+        return None
+
+    # Remove file extension from the final part.
+    path_parts[-1] = path_parts[-1].rsplit(
+        ".",
+        1,
+    )[0]
+
+    public_id = "/".join(path_parts)
+
+    # Only delete files uploaded inside our folder.
+    if not public_id.startswith(
+        f"{CLOUDINARY_FOLDER}/"
+    ):
+        return None
+
+    return public_id
+
+
+def delete_cloudinary_image(
+    public_id: str | None,
+) -> None:
+    if not public_id:
+        return
+
+    try:
+        cloudinary.uploader.destroy(
+            public_id,
+            resource_type="image",
+            invalidate=True,
+        )
+
+    except Exception:
+        app.logger.exception(
+            "Cloudinary image deletion failed for %s",
+            public_id,
+        )
 
 def valid_image_url(value: str) -> bool:
     if not value:
@@ -730,20 +848,27 @@ def add_auction():
             return redirect(url_for("add_auction"))
 
         image = request.files.get("image")
-        filename = None
+        uploaded_public_id = None
 
         try:
             if image and image.filename:
-                filename = save_uploaded_image(image)
-                image_url = None
+                image_url, uploaded_public_id = (
+                    save_uploaded_image(image)
+                )
             else:
-                image_url = form_data["image_url"] or None
+                image_url = (
+                    form_data["image_url"] or None
+                )
 
             new_auction = Auction(
                 title=form_data["title"],
                 description=form_data["description"],
-                image=filename,
+
+                # Cloudinary images are saved using image_url.
+                # image remains None so existing templates work.
+                image=None,
                 image_url=image_url,
+
                 starting_price=float(
                     form_data["starting_price"]
                 ),
@@ -759,8 +884,12 @@ def add_auction():
             db.session.commit()
 
         except ValueError as error:
-            if filename:
-                delete_uploaded_image(filename)
+            db.session.rollback()
+
+            # Remove the Cloudinary image if database saving failed.
+            delete_cloudinary_image(
+                uploaded_public_id
+            )
 
             flash(str(error), "danger")
             return redirect(url_for("add_auction"))
@@ -768,10 +897,13 @@ def add_auction():
         except Exception:
             db.session.rollback()
 
-            if filename:
-                delete_uploaded_image(filename)
+            delete_cloudinary_image(
+                uploaded_public_id
+            )
 
-            app.logger.exception("Auction creation failed")
+            app.logger.exception(
+                "Auction creation failed"
+            )
 
             flash(
                 "The auction could not be created.",
@@ -779,7 +911,10 @@ def add_auction():
             )
             return redirect(url_for("add_auction"))
 
-        flash("Auction added successfully.", "success")
+        flash(
+            "Auction added successfully.",
+            "success",
+        )
         return redirect(url_for("admin"))
 
     return render_template("add_auction.html")
@@ -833,28 +968,44 @@ def edit_auction(auction_id):
             )
 
         image = request.files.get("image")
-        new_filename = None
-        old_filename_to_delete = None
+
+        uploaded_public_id = None
+        image_replaced = False
+
+        # Save details of the previous image.
+        old_local_filename = auction.image
+        old_image_url = auction.image_url
 
         try:
+            # Admin uploaded a new image.
             if image and image.filename:
-                new_filename = save_uploaded_image(image)
-                old_filename_to_delete = auction.image
-
-                auction.image = new_filename
-                auction.image_url = None
-
-            elif form_data["image_url"]:
-                old_filename_to_delete = auction.image
+                new_image_url, uploaded_public_id = (
+                    save_uploaded_image(image)
+                )
 
                 auction.image = None
-                auction.image_url = form_data["image_url"]
+                auction.image_url = new_image_url
+                image_replaced = True
+
+            # Admin entered a different external image URL.
+            elif form_data["image_url"]:
+                new_external_url = form_data["image_url"]
+
+                if (
+                    auction.image is not None
+                    or new_external_url != auction.image_url
+                ):
+                    auction.image = None
+                    auction.image_url = new_external_url
+                    image_replaced = True
 
             auction.title = form_data["title"]
             auction.description = form_data["description"]
+
             auction.starting_price = float(
                 new_starting_price
             )
+
             auction.start_time = form_data["start_time"]
             auction.end_time = form_data["end_time"]
 
@@ -863,9 +1014,13 @@ def edit_auction(auction_id):
                     new_starting_price
                 )
 
+            now_utc = datetime.now(
+                timezone.utc
+            ).replace(tzinfo=None)
+
             if (
                 auction.status == "Active"
-                and datetime.now() >= auction.end_time
+                and now_utc >= auction.end_time
             ):
                 auction.status = "Closed"
 
@@ -874,10 +1029,13 @@ def edit_auction(auction_id):
         except ValueError as error:
             db.session.rollback()
 
-            if new_filename:
-                delete_uploaded_image(new_filename)
+            # Remove the newly uploaded image when updating fails.
+            delete_cloudinary_image(
+                uploaded_public_id
+            )
 
             flash(str(error), "danger")
+
             return redirect(
                 url_for(
                     "edit_auction",
@@ -888,8 +1046,9 @@ def edit_auction(auction_id):
         except Exception:
             db.session.rollback()
 
-            if new_filename:
-                delete_uploaded_image(new_filename)
+            delete_cloudinary_image(
+                uploaded_public_id
+            )
 
             app.logger.exception(
                 "Auction update failed for auction %s",
@@ -900,6 +1059,7 @@ def edit_auction(auction_id):
                 "The auction could not be updated.",
                 "danger",
             )
+
             return redirect(
                 url_for(
                     "edit_auction",
@@ -907,22 +1067,33 @@ def edit_auction(auction_id):
                 )
             )
 
-        if (
-            old_filename_to_delete
-            and old_filename_to_delete != new_filename
-        ):
+        # Delete the previous image only after the database update succeeds.
+        if image_replaced:
+            # Delete an old legacy local image.
             delete_uploaded_image(
-                old_filename_to_delete
+                old_local_filename
             )
 
-        flash("Auction updated successfully.", "success")
+            # Delete an old Cloudinary image.
+            old_public_id = get_cloudinary_public_id(
+                old_image_url
+            )
+
+            delete_cloudinary_image(
+                old_public_id
+            )
+
+        flash(
+            "Auction updated successfully.",
+            "success",
+        )
+
         return redirect(url_for("auctions"))
 
     return render_template(
         "edit_auction.html",
         auction=auction,
     )
-
 
 @app.route(
     "/delete-auction/<int:auction_id>",
@@ -931,11 +1102,20 @@ def edit_auction(auction_id):
 @admin_required
 def delete_auction(auction_id):
     auction = Auction.query.get_or_404(auction_id)
-    uploaded_filename = auction.image
+
+    # Save image information before deleting the database row.
+    old_local_filename = auction.image
+    old_image_url = auction.image_url
+
+    # Get Cloudinary public ID.
+    cloudinary_public_id = get_cloudinary_public_id(
+        old_image_url
+    )
 
     try:
         db.session.delete(auction)
         db.session.commit()
+
     except Exception:
         db.session.rollback()
 
@@ -948,11 +1128,24 @@ def delete_auction(auction_id):
             "The auction could not be deleted.",
             "danger",
         )
+
         return redirect(url_for("auctions"))
 
-    delete_uploaded_image(uploaded_filename)
+    # Delete an old image from static/uploads, if present.
+    delete_uploaded_image(
+        old_local_filename
+    )
 
-    flash("Auction deleted successfully.", "success")
+    # Delete the Cloudinary image, if present.
+    delete_cloudinary_image(
+        cloudinary_public_id
+    )
+
+    flash(
+        "Auction deleted successfully.",
+        "success",
+    )
+
     return redirect(url_for("auctions"))
 
 
