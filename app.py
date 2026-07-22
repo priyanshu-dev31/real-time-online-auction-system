@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import os
-from datetime import datetime
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from decimal import Decimal, InvalidOperation
 from functools import wraps
 from urllib.parse import urlparse
@@ -32,6 +33,22 @@ from models.user import User
 
 ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
 MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5 MB
+
+
+INDIA_TIMEZONE = ZoneInfo("Asia/Kolkata")
+
+
+def india_time_to_utc(local_datetime):
+    """Convert a datetime entered in Indian time to naive UTC."""
+
+    if local_datetime.tzinfo is None:
+        local_datetime = local_datetime.replace(
+            tzinfo=INDIA_TIMEZONE
+        )
+
+    return local_datetime.astimezone(
+        timezone.utc
+    ).replace(tzinfo=None)
 
 
 app = Flask(__name__)
@@ -215,17 +232,25 @@ def parse_auction_form(
         return None
 
     try:
-        start_time = datetime.strptime(
+        start_time_india = datetime.strptime(
             request.form.get("start_time", ""),
             "%Y-%m-%dT%H:%M",
         )
-        end_time = datetime.strptime(
+
+        end_time_india = datetime.strptime(
             request.form.get("end_time", ""),
             "%Y-%m-%dT%H:%M",
         )
+
     except ValueError:
-        flash("Please provide valid start and end times.", "danger")
+        flash(
+            "Please provide valid start and end times.",
+            "danger",
+        )
         return None
+
+    start_time = india_time_to_utc(start_time_india)
+    end_time = india_time_to_utc(end_time_india)
 
     if end_time <= start_time:
         flash(
@@ -234,8 +259,15 @@ def parse_auction_form(
         )
         return None
 
-    if require_future_end and end_time <= datetime.now():
-        flash("End time must be in the future.", "danger")
+    now_utc = datetime.now(
+        timezone.utc
+    ).replace(tzinfo=None)
+
+    if require_future_end and end_time <= now_utc:
+        flash(
+            "End time must be in the future.",
+            "danger",
+        )
         return None
 
     if not valid_image_url(image_url):
@@ -559,7 +591,9 @@ def place_bid(auction_id):
         if auction is None:
             abort(404)
 
-        now = datetime.now()
+        now = datetime.now(
+            timezone.utc
+        ).replace(tzinfo=None) 
 
         if now < auction.start_time:
             db.session.rollback()
