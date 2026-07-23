@@ -61,6 +61,29 @@ def india_time_to_utc(local_datetime):
     ).replace(tzinfo=None)
 
 
+def utc_now():
+    return datetime.now(
+        timezone.utc
+    ).replace(tzinfo=None)
+
+
+def utc_to_india_datetime_local(utc_datetime):
+    if utc_datetime is None:
+        return ""
+
+    utc_datetime = utc_datetime.replace(
+        tzinfo=timezone.utc
+    )
+
+    india_datetime = utc_datetime.astimezone(
+        INDIA_TIMEZONE
+    )
+
+    return india_datetime.strftime(
+        "%Y-%m-%dT%H:%M"
+    )
+
+
 app = Flask(__name__)
 app.config.from_object(Config)
 csrf = CSRFProtect(app)
@@ -120,11 +143,14 @@ def admin_required(view_function):
 # =========================================================
 # Auction and image helpers
 # =========================================================
-
 def close_expired_auction(auction: Auction) -> bool:
+    now_utc = datetime.now(
+        timezone.utc
+    ).replace(tzinfo=None)
+
     if (
         auction.status == "Active"
-        and datetime.now() >= auction.end_time
+        and now_utc >= auction.end_time
     ):
         auction.status = "Closed"
         return True
@@ -137,7 +163,9 @@ def close_all_expired_auctions() -> None:
         Auction.query
         .filter(
             Auction.status == "Active",
-            Auction.end_time <= datetime.now(),
+            Auction.end_time <= datetime.now(
+                timezone.utc
+            ).replace(tzinfo=None)
         )
         .all()
     )
@@ -421,7 +449,9 @@ def parse_auction_form(
 @app.route("/")
 def home():
     close_all_expired_auctions()
-    now = datetime.now()
+    now = datetime.now(
+        timezone.utc
+    ).replace(tzinfo=None)
 
     featured_auctions = (
         Auction.query
@@ -726,9 +756,7 @@ def place_bid(auction_id):
         if auction is None:
             abort(404)
 
-        now = datetime.now(
-            timezone.utc
-        ).replace(tzinfo=None) 
+        now = utc_now()
 
         if now < auction.start_time:
             db.session.rollback()
@@ -1032,14 +1060,13 @@ def edit_auction(auction_id):
                 )
 
             now_utc = datetime.now(
-                timezone.utc
+               timezone.utc
             ).replace(tzinfo=None)
 
-            if (
-                auction.status == "Active"
-                and now_utc >= auction.end_time
-            ):
+            if now_utc >= auction.end_time:
                 auction.status = "Closed"
+            else:
+                auction.status = "Active"
 
             db.session.commit()
 
@@ -1164,6 +1191,10 @@ def delete_auction(auction_id):
     )
 
     return redirect(url_for("auctions"))
+
+@app.template_filter("india_datetime_local")
+def india_datetime_local_filter(value):
+    return utc_to_india_datetime_local(value)
 
 
 # =========================================================

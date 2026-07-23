@@ -170,7 +170,7 @@ Edit Auction
                     type="datetime-local"
                     id="start-time"
                     name="start_time"
-                    value="{{ auction.start_time.strftime('%Y-%m-%dT%H:%M') }}"
+                    value="{{auction.start_time | india_datetime_local}}"
                     required>
 
             </div>
@@ -185,7 +185,7 @@ Edit Auction
                     type="datetime-local"
                     id="end-time"
                     name="end_time"
-                    value="{{ auction.end_time.strftime('%Y-%m-%dT%H:%M') }}"
+                    value="{{ auction.end_time | india_datetime_local }}"
                     required>
 
             </div>
