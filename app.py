@@ -21,6 +21,9 @@ from flask import (
     session,
     url_for,
 )
+from flask_wtf.csrf import CSRFProtect
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import HTTPException
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -60,6 +63,12 @@ def india_time_to_utc(local_datetime):
 
 app = Flask(__name__)
 app.config.from_object(Config)
+csrf = CSRFProtect(app)
+limiter = Limiter(
+    key_func=get_remote_address,
+    app=app,
+    default_limits=[],
+)
 app.config.setdefault("MAX_CONTENT_LENGTH", MAX_IMAGE_SIZE)
 
 upload_folder = app.config.get(
@@ -436,6 +445,10 @@ def home():
 
 
 @app.route("/register", methods=["GET", "POST"])
+@limiter.limit(
+    "5 per minute",
+    methods=["POST"],
+)
 def register():
     if "user_id" in session:
         if session.get("role") == "admin":
@@ -485,8 +498,11 @@ def register():
 
     return render_template("register.html")
 
-
 @app.route("/login", methods=["GET", "POST"])
+@limiter.limit(
+    "5 per minute",
+    methods=["POST"],
+)
 def login():
     if "user_id" in session:
         if session.get("role") == "admin":
@@ -678,6 +694,7 @@ def my_bids():
     "/place-bid/<int:auction_id>",
     methods=["POST"],
 )
+@limiter.limit("10 per minute")
 @login_required
 def place_bid(auction_id):
     if session.get("role") == "admin":
@@ -1168,6 +1185,9 @@ def file_too_large(error):
         request.referrer or url_for("admin")
     )
 
+@app.errorhandler(429)
+def too_many_requests(error):
+    return render_template("429.html"), 429
 
 @app.errorhandler(500)
 def internal_server_error(error):

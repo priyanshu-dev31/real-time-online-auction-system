@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="error-page">
+    <h1>429</h1>
+
+    <h2>Too Many Requests</h2>
+
+    <p>
+        You have made too many requests in a short period.
+        Please wait a moment and try again.
+    </p>
+
+    <a href="{{ url_for('home') }}" class="btn">
+        Back to Home
+    </a>
+</div>
+
+{% endblock %}

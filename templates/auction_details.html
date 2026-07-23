@@ -270,6 +270,12 @@
                     <form
                         method="POST"
                         action="{{ url_for('place_bid', auction_id=auction.id) }}">
+                        <input
+    type="hidden"
+    name="csrf_token"
+    value="{{ csrf_token() }}"
+>
+
 
                         <div class="form-group">
 

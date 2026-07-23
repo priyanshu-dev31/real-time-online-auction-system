@@ -302,6 +302,12 @@ Available Auctions
                                         auction_id=auction.id
                                     ) }}"
                                     method="POST">
+                                    <input
+    type="hidden"
+    name="csrf_token"
+    value="{{ csrf_token() }}"
+>
+
 
                                     <button
                                         type="submit"

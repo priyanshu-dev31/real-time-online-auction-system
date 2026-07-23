@@ -25,6 +25,12 @@ class Config:
     SQLALCHEMY_DATABASE_URI = database_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = "Lax"
+    SESSION_COOKIE_SECURE = (
+        os.environ.get("RENDER") == "true"
+    )
+
     SQLALCHEMY_ENGINE_OPTIONS = {
         "connect_args": {
             "ssl": {
