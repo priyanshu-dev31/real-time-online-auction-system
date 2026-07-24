@@ -102,9 +102,18 @@ def utc_to_india_display(utc_datetime):
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
 @app.template_filter("india_datetime")
 def india_datetime_filter(value):
     return utc_to_india_display(value)
+
+@app.template_filter("inr")
+def inr_filter(value):
+    try:
+        return f"₹{float(value):,.2f}"
+    except (TypeError, ValueError):
+        return value
+
 csrf = CSRFProtect(app)
 limiter = Limiter(
     key_func=get_remote_address,

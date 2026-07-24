@@ -100,7 +100,7 @@
 
                     ₹
                     <span id="current-price">
-                        {{ auction.current_price }}
+                        {{ auction.current_price | inr }}
                     </span>
 
                 </p>
@@ -123,7 +123,7 @@
                         </p>
 
                         <p class="meta-value">
-                            ₹ {{ auction.starting_price }}
+                            {{ auction.starting_price | inr }}
                         </p>
 
                     </div>
@@ -406,11 +406,11 @@
                                     </td>
 
                                     <td class="bid-amount-cell">
-                                        ₹ {{ bid.bid_amount }}
+                                         {{ bid.bid_amount | inr  }}
                                     </td>
 
                                     <td>
-                                        
+
                                      {{ bid.bid_time | india_datetime }}
 
                                     </td>
@@ -465,7 +465,7 @@
                     </p>
 
                     <p class="winner-price">
-                        Winning Bid: ₹ {{ winner.bid_amount }}
+                        Winning Bid:  {{ winner.bid_amount | inr  }}
                     </p>
 
                 {% else %}
@@ -633,7 +633,7 @@ const initialAuctionStatus =
                 <tr>
                     <td>${escapeHtml(bid.user)}</td>
                     <td class="bid-amount-cell">
-                        ₹ ${formatCurrency(bid.amount)}
+                        ₹${formatCurrency(bid.amount)}
                     </td>
                     <td>${escapeHtml(bid.time)}</td>
                 </tr>
@@ -676,7 +676,7 @@ const initialAuctionStatus =
             .then(data => {
 
                 document.getElementById("current-price").textContent =
-                    formatCurrency(data.current_price);
+                    `₹${formatCurrency(data.current_price)}`;
 
                 document.getElementById("bid-history").innerHTML =
                     buildBidHistory(data.bids);

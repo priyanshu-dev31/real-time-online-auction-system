@@ -247,7 +247,7 @@ Available Auctions
                                 </p>
 
                                 <p class="auction-starting-price">
-                                    ₹ {{ auction.starting_price }}
+                                     {{ auction.starting_price | inr }}
                                 </p>
 
                             </div>
@@ -260,13 +260,26 @@ Available Auctions
                                 </p>
 
                                 <p class="auction-current-price">
-                                    ₹ {{ auction.current_price }}
+                                     {{ auction.current_price | inr  }}
                                 </p>
 
                             </div>
 
                         </div>
 
+                        <div class="auction-card-end-time">
+
+    <i class="fa-regular fa-clock"></i>
+
+    <span>
+        {% if auction.status == "Active" %}
+            Ends: {{ auction.end_time | india_datetime }}
+        {% else %}
+            Ended: {{ auction.end_time | india_datetime }}
+        {% endif %}
+    </span>
+
+</div>
 
                         <div class="card-buttons">
 
