@@ -144,7 +144,7 @@
                         </p>
 
                         <p class="meta-value">
-                            {{ auction.start_time.strftime("%d %b %Y, %I:%M %p") }}
+                            {{ auction.start_time  | india_datetime }}
                         </p>
 
                     </div>
@@ -165,7 +165,7 @@
                         </p>
 
                         <p class="meta-value">
-                            {{ auction.end_time.strftime("%d %b %Y, %I:%M %p") }}
+                            {{ auction.end_time | india_datetime }}
                         </p>
 
                     </div>
@@ -410,7 +410,9 @@
                                     </td>
 
                                     <td>
-                                        {{ bid.bid_time.strftime("%d-%m-%Y %H:%M") }}
+                                        
+                                     {{ bid.bid_time | india_datetime }}
+
                                     </td>
 
                                 </tr>

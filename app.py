@@ -83,9 +83,28 @@ def utc_to_india_datetime_local(utc_datetime):
         "%Y-%m-%dT%H:%M"
     )
 
+def utc_to_india_display(utc_datetime):
+    if utc_datetime is None:
+        return ""
+
+    utc_datetime = utc_datetime.replace(
+        tzinfo=timezone.utc
+    )
+
+    india_datetime = utc_datetime.astimezone(
+        INDIA_TIMEZONE
+    )
+
+    return india_datetime.strftime(
+        "%d %b %Y, %I:%M %p"
+    )
+
 
 app = Flask(__name__)
 app.config.from_object(Config)
+@app.template_filter("india_datetime")
+def india_datetime_filter(value):
+    return utc_to_india_display(value)
 csrf = CSRFProtect(app)
 limiter = Limiter(
     key_func=get_remote_address,
@@ -684,7 +703,7 @@ def auction_data(auction_id):
             {
                 "user": bid.user.full_name,
                 "amount": bid.bid_amount,
-                "time": bid.bid_time.strftime("%d-%m-%Y %H:%M"),
+                "time": utc_to_india_display(bid.bid_time),   
             }
             for bid in bids
         ],
