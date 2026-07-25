@@ -5,12 +5,23 @@
     justify-content:space-between;
     align-items:center;
     padding:15px 40px;
-    flex-wrap:wrap;
 }
 
 .logo{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    color:#ffffff;
     font-size:24px;
-    font-weight:bold;
+    font-weight:700;
+
+    cursor:default;
+    user-select:none;
+}
+
+.logo-icon{
+    color:#ffffff;
 }
 
 .nav-links{

@@ -73,29 +73,18 @@
 <header class="main-header">
 
     <nav class="navbar">
+        <div class="logo">
 
-        <a href="{{ url_for('home') }}"
-           class="logo">
+    <span class="logo-icon">
+        <i class="fa-solid fa-gavel"></i>
+    </span>
 
-            <span class="logo-icon">
-                <i class="fa-solid fa-gavel"></i>
-            </span>
+    <span>Online Auction</span>
 
-            <span>Online Auction</span>
+</div>
 
-        </a>
-
+       
         <!-- Mobile Menu Button -->
-
-        <button class="menu-toggle"
-                id="menuToggle"
-                type="button"
-                aria-label="Open navigation menu"
-                aria-expanded="false">
-
-            <i class="fa-solid fa-bars"></i>
-
-        </button>
 
         <div class="navbar-content"
              id="navbarContent">
@@ -372,50 +361,6 @@
 <!-- ================= JAVASCRIPT ================= -->
 
 <script>
-
-    const menuToggle = document.getElementById("menuToggle");
-    const navbarContent = document.getElementById("navbarContent");
-
-    if (menuToggle && navbarContent) {
-
-        menuToggle.addEventListener("click", function () {
-
-            navbarContent.classList.toggle("show");
-
-            const menuIsOpen =
-                navbarContent.classList.contains("show");
-
-            menuToggle.setAttribute(
-                "aria-expanded",
-                menuIsOpen
-            );
-
-            menuToggle.innerHTML = menuIsOpen
-                ? '<i class="fa-solid fa-xmark"></i>'
-                : '<i class="fa-solid fa-bars"></i>';
-
-        });
-
-
-        document.querySelectorAll(".nav-links a").forEach(function (link) {
-
-            link.addEventListener("click", function () {
-
-                navbarContent.classList.remove("show");
-
-                menuToggle.setAttribute(
-                    "aria-expanded",
-                    "false"
-                );
-
-                menuToggle.innerHTML =
-                    '<i class="fa-solid fa-bars"></i>';
-
-            });
-
-        });
-
-    }
 
 
     // Close flash message manually
